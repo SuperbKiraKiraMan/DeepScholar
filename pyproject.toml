@@ -1,0 +1,6 @@
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = [
+    "openalex_live: Live OpenAlex API smoke test (requires OPENALEX_API_KEY, skipped otherwise)",
+    "semantic_scholar_live: Live Semantic Scholar smoke test (explicit opt-in + API key)",
+]

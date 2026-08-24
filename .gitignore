@@ -1,0 +1,48 @@
+# 环境变量、密钥和本机 MCP 配置
+.env
+.env.*
+!.env.example
+mcp_servers.json
+
+# Python 构建与缓存
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+
+# 编辑器与操作系统文件
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# 本地索引、模型、数据库和运行态数据
+data/models/
+data/zotero/
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data/*.sqlite
+data/*.sqlite3
+*.db
+*.sqlite
+*.sqlite3
+*.npy
+*.jsonl
+.memory/
+.task_outputs/
+.transcripts/
+
+# 评测与基准脚本生成的报告
+evaluation/
+benchmarks/results/
+docs/evaluation_report.md
+harness/reports/*.md
+harness/reports/*.json
+!harness/reports/.gitkeep

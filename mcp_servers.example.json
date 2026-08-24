@@ -1,0 +1,77 @@
+{
+  "mcpServers": {
+    "academic-research": {
+      "enabled": true,
+      "transport": "stdio",
+      "command": "${PYTHON_EXECUTABLE}",
+      "args": [
+        "-m",
+        "app.mcp.academic_server"
+      ],
+      "inherit_env": [
+        "SEARCH_PROVIDER",
+        "OPENALEX_API_KEY",
+        "OPENALEX_BASE_URL",
+        "OPENALEX_CONTENT_BASE_URL",
+        "OPENALEX_CONTENT_MODE",
+        "OPENALEX_TIMEOUT_SECONDS",
+        "SEMANTIC_SCHOLAR_API_KEY",
+        "SEMANTIC_SCHOLAR_GRAPH_BASE_URL",
+        "SEMANTIC_SCHOLAR_RECOMMENDATIONS_BASE_URL",
+        "SEMANTIC_SCHOLAR_TIMEOUT_SECONDS",
+        "SEMANTIC_SCHOLAR_MAX_RETRIES",
+        "SEMANTIC_SCHOLAR_RATE_LIMIT_RETRIES",
+        "SEMANTIC_SCHOLAR_MAX_RETRY_WAIT_SECONDS",
+        "CROSSREF_MAILTO",
+        "CROSSREF_BASE_URL",
+        "CROSSREF_TIMEOUT_SECONDS",
+        "LOCAL_RAG_ENDPOINT",
+        "LOCAL_RAG_TIMEOUT_SECONDS"
+      ],
+      "tools": {
+        "recommend_papers": {
+          "enabled": true,
+          "task_types": [
+            "search"
+          ],
+          "result_kind": "sources"
+        },
+        "semantic_scholar_search": {
+          "enabled": true,
+          "task_types": [
+            "search"
+          ],
+          "result_kind": "sources"
+        },
+        "semantic_scholar_recommendations": {
+          "enabled": true,
+          "task_types": [
+            "search"
+          ],
+          "result_kind": "sources"
+        },
+        "semantic_scholar_graph": {
+          "enabled": true,
+          "task_types": [
+            "search"
+          ],
+          "result_kind": "sources"
+        },
+        "crossref_search": {
+          "enabled": true,
+          "task_types": [
+            "search"
+          ],
+          "result_kind": "sources"
+        },
+        "local_rag_search": {
+          "enabled": false,
+          "task_types": [
+            "search"
+          ],
+          "result_kind": "sources"
+        }
+      }
+    }
+  }
+}

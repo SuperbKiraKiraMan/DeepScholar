@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#ffffff">
+  <title>Academic Research Copilot</title>
+  <link rel="icon" type="image/png" href="/static/assets/academic-copilot-icon.png?v=2.3.1">
+  <link rel="stylesheet" href="/static/styles.css?v=2.4.3">
+</head>
+<body>
+  <img src="/static/assets/academic-copilot-logo.png" alt="Academic Research Copilot" hidden>
+  <main class="dashboard research-shell">
+    <div id="sidebar-backdrop" class="sidebar-backdrop" hidden></div>
+
+    <aside class="control-sidebar workspace-sidebar" id="config-panel" aria-label="研究工作区导航">
+      <header class="sidebar-brand">
+        <a class="brand-lockup" href="/" aria-label="Academic Research Copilot 首页">
+          <img src="/static/assets/academic-copilot-icon.png" alt="">
+          <span><strong>ACADEMIC RESEARCH</strong><small>COPILOT</small></span>
+        </a>
+        <button id="btn-sidebar-close" class="icon-button sidebar-close" type="button" aria-label="关闭导航"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+      </header>
+
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <button id="btn-focus-topic" class="nav-item is-active" type="button" data-workspace="research"><span><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg></span>新对话</button>
+        <button class="nav-item" type="button" data-workspace="library"><span><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="9" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="2.5" y="9" width="4.5" height="4.5" rx="1"/><rect x="9" y="9" width="4.5" height="4.5" rx="1"/></svg></span>论文库</button>
+      </nav>
+
+      <section class="active-session-card" aria-label="当前会话">
+        <div class="sidebar-label">ACTIVE SESSION</div>
+        <strong id="session-topic">新的研究问题</strong>
+        <span id="session-summary">等待开始 · 0 轮对话</span>
+        <code id="session-id">正在创建会话…</code>
+      </section>
+
+      <section class="run-history" aria-label="最近研究记录">
+        <div class="history-heading"><span>Recent reports</span><button id="btn-history-refresh" class="icon-button" type="button" aria-label="刷新"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.5 2.5v3h-3" stroke-linejoin="round"/></svg></button></div>
+        <div id="history-list" class="history-list"></div>
+        <p id="history-empty" class="history-empty">暂无研究记录</p>
+        <button id="btn-history-more" class="history-more" type="button" hidden>加载更多</button>
+      </section>
+
+      <section class="sidebar-settings" aria-label="研究设置">
+        <details class="advanced-settings">
+          <summary>研究配置</summary>
+          <div class="advanced-body">
+            <div class="field-row">
+              <label class="field field-half"><span class="field-label">来源数</span><input type="number" id="max_sources" value="5" min="1" max="50"></label>
+              <label class="field field-half"><span class="field-label">语言</span><select id="language"><option value="zh" selected>中文</option><option value="en">English</option></select></label>
+            </div>
+            <label class="field"><span class="field-label">Runtime</span><select id="backend" disabled><option value="graph_send" selected>LangGraph + Send</option></select></label>
+            <label class="field"><span class="field-label">Agent</span><select id="agent_mode" disabled><option value="llm" selected>LLM · DeepSeek</option></select></label>
+            <label class="toggle-row" for="run_eval"><span>质量评估</span><input type="checkbox" id="run_eval" checked><span class="toggle-control"></span></label>
+            <div class="run-loader"><span class="field-label">打开已保存运行</span><div class="loader-row"><input type="text" id="query-run-id" placeholder="Run ID"><button id="btn-query" class="icon-button bordered" type="button">→</button></div></div>
+          </div>
+        </details>
+      </section>
+      <footer class="sidebar-footer"><span class="provider-dot"></span>OpenAlex · S2 · Local memory · v1.3</footer>
+    </aside>
+
+    <section class="workspace-main">
+      <header class="app-header">
+        <button id="btn-config-toggle" class="header-action mobile-menu" type="button" aria-controls="config-panel" aria-expanded="false"><svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2.5 4h11M2.5 8h11M2.5 12h11"/></svg></button>
+        <div class="workspace-picker"><span class="search-glyph"></span><span id="workspace-state-text" class="workspace-state">新的研究会话</span><span><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5l4 4 4-4"/></svg></span></div>
+        <div class="header-runtime">
+          <span id="connection-badge" class="connection-badge badge-offline"><i id="sse-status"></i><span>Offline</span></span>
+          <span id="current-run-id" class="run-id-label">New search</span>
+          <span id="run-status" class="status-tag status-idle"><i></i>Idle</span>
+          <span id="elapsed-time" class="elapsed">00:00</span>
+          <button id="btn-new-session-top" class="top-new-button" type="button">＋ 新会话</button>
+        </div>
+      </header>
+
+      <div class="chat-scroll" id="chat-scroll">
+        <section id="overview-idle" class="welcome-view">
+          <div class="welcome-orbit"><img class="welcome-logo" src="/static/assets/academic-copilot-icon.png" alt=""></div>
+          <span class="welcome-kicker">Research with memory</span>
+          <h1>从一个问题，走向一条完整证据链。</h1>
+          <p>检索论文、比较研究、追问细节；助手会记住当前论文与报告上下文。</p>
+          <div class="welcome-capabilities"><span>论文检索</span><span>引用解析</span><span>多轮追问</span><span>深度报告</span></div>
+        </section>
+
+        <section id="conversation-thread" class="conversation-thread" aria-label="历史对话"></section>
+
+        <section id="user-message" class="query-summary" hidden>
+          <span class="turn-label">You</span><div><span class="query-kicker">CURRENT QUESTION</span><h1 id="user-message-text"></h1></div>
+        </section>
+
+        <section id="assistant-message" class="assistant-message research-results" hidden>
+          <header class="assistant-heading">
+            <div class="result-identity"><div class="message-avatar assistant-avatar"><img src="/static/assets/academic-copilot-icon.png" alt=""></div><div><span class="result-kicker">Academic Research Copilot</span><strong class="message-author">Research answer</strong></div></div>
+            <span id="route-badge" class="route-badge">Routing</span>
+          </header>
+
+          <section id="direct-response" class="direct-response" aria-live="polite">
+            <div id="direct-thinking" class="direct-thinking"><span class="thinking-indicator"><i></i><i></i><i></i></span><div><strong id="direct-thinking-title">正在理解你的请求</strong><p id="direct-thinking-detail">正在选择最合适的学术研究能力。</p></div></div>
+            <div id="direct-provider-notice" class="direct-provider-notice" hidden><strong id="direct-provider-notice-title">已切换备用数据源</strong><p id="direct-provider-notice-detail"></p></div>
+            <div id="direct-results" class="direct-results" hidden><div id="direct-answer" class="direct-answer report-content" hidden></div><div class="direct-results-heading"><div><span class="eyebrow">Research results</span><h2 id="direct-results-title">正在查找论文</h2></div><span id="direct-results-count" class="direct-results-count">0 sources</span></div><p id="direct-results-summary" class="direct-results-summary"></p><div id="direct-source-list" class="direct-source-list"></div><div id="direct-pagination" class="direct-pagination" hidden><button id="btn-direct-more" type="button">加载更多论文</button><span id="direct-pagination-status">继续获取下一页</span></div></div>
+          </section>
+
+          <section id="deep-response" class="deep-response">
+            <div id="research-corpus-status" class="research-corpus-status" aria-live="polite"><span>已找到 <strong id="discovered-source-count">0</strong> 篇</span><i></i><span>已分析 <strong id="analyzed-source-count">0</strong> 篇</span></div>
+            <section id="overview-running" class="research-progress-card" aria-live="polite">
+              <div class="research-progress-heading"><span class="research-orbit"><i></i></span><div class="research-progress-copy"><span class="eyebrow">Deep research</span><h2 id="current-activity-title">正在准备深度调研</h2><p id="current-activity-detail">正在理解问题并选择研究路径。</p></div><span id="current-activity-time" class="mono-label">00:00</span></div>
+              <div id="activity-feed" class="research-step-list"></div><div class="research-progress-footer"><span id="workspace-title">正在分析请求</span><span id="workspace-subtitle">完成后将在这里生成回答。</span></div>
+            </section>
+            <section id="deep-report" class="deep-report" hidden aria-live="polite">
+              <div id="results-empty" class="report-generation-state"><span class="thinking-indicator"><i></i><i></i><i></i></span><span>正在生成回答</span></div>
+              <div id="report-section" hidden><div class="report-toolbar"><span id="report-state-label">正在撰写回答</span><button id="btn-skip-typing" type="button" hidden>显示完整内容</button></div><article class="report-content" id="report-content"></article></div>
+            </section>
+          </section>
+        </section>
+      </div>
+
+      <section id="library-view" class="collection-view" hidden aria-label="论文库">
+        <header class="collection-header"><div><span class="eyebrow">Paper library</span><h1>论文库</h1><p>本地 Zotero 索引与历史研究中检索过的论文。</p></div><span id="library-count" class="collection-count">0 篇</span></header>
+        <div class="collection-toolbar"><input id="library-search" type="search" placeholder="按标题、作者、DOI 搜索论文"><div class="filter-group" role="group" aria-label="论文来源"><button class="filter-button is-active" data-library-origin="all" type="button">全部</button><button class="filter-button" data-library-origin="local" type="button">本地论文</button><button class="filter-button" data-library-origin="searched" type="button">搜索历史</button></div></div>
+        <div class="paper-detail-search">
+          <div class="paper-detail-search-row">
+            <input id="paper-detail-query" type="search" maxlength="300" placeholder="输入论文标题，如：Attention Is All You Need">
+            <button id="paper-detail-button" type="button">查询详情</button>
+          </div>
+          <p class="paper-detail-hint">本地 Zotero 库命中优先显示本地 PDF；否则在线查询 Semantic Scholar / OpenAlex。</p>
+          <div id="paper-detail-result" hidden></div>
+        </div>
+        <div class="collection-split"><div><div id="library-list" class="collection-list"></div><div id="library-empty" class="collection-empty" hidden>没有找到匹配的论文。</div></div><aside id="library-detail" class="collection-detail"><div class="detail-placeholder"><strong>选择一篇论文</strong><p>查看作者、年份、来源、索引状态和历史研究记录。</p></div></aside></div>
+      </section>
+
+      <section class="search-band composer-dock" aria-label="Academic research search">
+        <div class="composer"><textarea id="topic" rows="1" placeholder="追问当前研究，或开始一个新的学术问题…" aria-label="Research request"></textarea><button id="btn-cancel" class="composer-action stop-action" type="button" disabled>停止</button><button id="btn-start" class="composer-action send-action" type="button" aria-label="发送"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12.5V3.5M3.5 8L8 3.5 12.5 8"/></svg></button></div>
+        <div class="search-examples"><button type="button" data-prompt="请推荐 5 篇关于 LLM Agent evaluation 的论文">寻找相关论文</button><button type="button" data-prompt="对比第一篇和第二篇的研究方法">对比前两篇</button><button type="button" data-prompt="第一篇论文的核心结论和局限是什么？">追问第一篇</button><button type="button" data-prompt="继续展开报告中的研究局限部分">展开报告章节</button></div>
+      </section>
+    </section>
+
+    <aside id="research-artifacts" class="research-artifacts evidence-sidebar" aria-label="研究证据面板">
+      <header class="evidence-header"><div><span class="eyebrow">Evidence workspace</span><h2>研究材料</h2></div><span id="artifact-summary" class="artifact-summary">0 个来源 · 0 条证据</span></header>
+      <section class="metric-strip"><div><span>Sources</span><strong id="metric-sources">—</strong></div><div><span>Evidence</span><strong id="metric-evidence">—</strong></div><div><span>Citation</span><strong id="metric-citations">—</strong></div><div><span>Runtime</span><strong id="metric-runtime">—</strong></div></section>
+      <div class="tab-bar" role="tablist">
+        <button class="tab-button is-active" id="tab-sources" data-tab="sources" role="tab" aria-selected="true">来源</button>
+        <button class="tab-button" id="tab-evidence" data-tab="evidence" role="tab" aria-selected="false">证据</button>
+        <button class="tab-button" id="tab-outline" data-tab="outline" role="tab" aria-selected="false">大纲</button>
+        <button class="tab-button" id="tab-quality" data-tab="quality" role="tab" aria-selected="false">质量</button>
+        <button class="tab-button" id="tab-trace" data-tab="trace" role="tab" aria-selected="false">Trace <span id="trace-count">0</span></button>
+      </div>
+      <div class="workspace-content">
+        <section class="tab-panel is-active" id="panel-sources" data-panel="sources" role="tabpanel"><div id="sources-section" hidden><div class="table-wrap"><table id="sources-table" class="data-table"></table></div></div><div id="sources-empty" class="panel-empty compact-empty"><h3>等待研究来源</h3><p>论文与网页来源会显示在这里。</p></div></section>
+        <section class="tab-panel" id="panel-evidence" data-panel="evidence" role="tabpanel" hidden><div id="evidence-section" hidden><div id="evidence-list" class="evidence-grid"></div></div><div id="evidence-empty" class="panel-empty compact-empty"><h3>暂无证据</h3><p>深度调研会抽取可追溯证据卡。</p></div></section>
+        <section class="tab-panel" id="panel-outline" data-panel="outline" role="tabpanel" hidden><div id="outline-section" hidden><ol id="outline-list" class="outline-list"></ol></div><div id="outline-empty" class="panel-empty compact-empty"><h3>暂无报告大纲</h3><p>生成报告后可按章节继续追问。</p></div></section>
+        <section class="tab-panel" id="panel-quality" data-panel="quality" role="tabpanel" hidden><div class="quality-grid"><section class="quality-section"><h3>Citation audit</h3><div id="citation-section" hidden><div class="table-wrap"><table id="citation-table" class="data-table"></table></div></div><p id="citation-empty" class="inline-empty">No citation checks.</p></section><section class="quality-section"><h3>Evaluation</h3><div id="eval-section" hidden><div id="eval-display" class="eval-display"></div></div><p id="eval-empty" class="inline-empty">No metrics.</p></section><section class="quality-section"><span class="eyebrow">Run telemetry</span><h3>Observability</h3><div id="observability-section" hidden><div id="observability-display" class="observability-grid"></div></div><p id="observability-empty" class="inline-empty">No telemetry.</p></section></div></section>
+        <section class="tab-panel" id="panel-trace" data-panel="trace" role="tabpanel" hidden><div class="trace-container" id="trace-container"><div class="trace-empty" id="trace-empty"><span class="trace-prompt">$</span><p>Waiting for runtime events.</p></div><div class="trace-events" id="trace-events"></div></div><div class="dag-container" id="dag-container" hidden><div id="dag-display" class="dag-display"></div></div><div class="errors-container" id="errors-container" hidden><h3>Warnings and errors</h3><ul id="errors-list"></ul></div></section>
+      </div>
+    </aside>
+  </main>
+
+  <dialog id="source-limit-dialog" class="notice-dialog"><form method="dialog"><span class="eyebrow">Input adjusted</span><h2>来源数量已调整</h2><p id="source-limit-message"></p><button class="dialog-confirm" type="submit">确定</button></form></dialog>
+  <dialog id="runtime-error-dialog" class="notice-dialog error-dialog"><form method="dialog"><span class="eyebrow">Run failed</span><h2>调研执行失败</h2><p id="runtime-error-message"></p><button class="dialog-confirm" type="submit">知道了</button></form></dialog>
+  <script src="/static/app.js?v=2.4.3"></script>
+</body>
+</html>

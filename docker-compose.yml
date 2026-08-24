@@ -1,0 +1,35 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.18.2
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    restart: unless-stopped
+
+  academic-research-copilot:
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8000
+      SQLITE_DB_PATH: /app/data/research_history.db
+      MCP_CONFIG_PATH: /app/mcp_servers.example.json
+      ZOTERO_STORAGE_PATH: /zotero/storage
+      QDRANT_URL: http://qdrant:6333
+      BGE_M3_CACHE_DIR: /app/data/models
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      # 通过环境变量挂载宿主机的只读 Zotero 目录；默认路径仅用于占位。
+      - ${ZOTERO_STORAGE_PATH:-./data/zotero}:/zotero/storage:ro
+    depends_on:
+      - qdrant
+    restart: unless-stopped
+
+volumes:
+  qdrant_storage:

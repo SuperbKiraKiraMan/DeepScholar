@@ -1,0 +1,22 @@
+# 运行时核心依赖
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+httpx>=0.27.0
+sse-starlette>=3.0.0
+langgraph>=1.0.0,<2.0.0
+mcp>=1.27.0,<2.0.0
+pypdf>=5.0.0,<7.0.0
+sentence-transformers>=5.0.0,<6.0.0
+qdrant-client>=1.18.0,<2.0.0
+
+# 测试依赖
+pytest>=8.0.0
+pytest-asyncio>=0.24.0
+
+# 可选 LLM SDK（当前客户端使用 httpx 调用兼容接口）
+# openai>=1.0.0
+
+# 可选外部评测 SDK
+# deepeval>=1.0.0
