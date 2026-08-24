@@ -33,27 +33,7 @@ DeepScholar 是一个面向研究生与科研场景的学术 Agent，支持论�
 - **可观测运行**：后台 Run、渐进式 SSE 事件、取消、warning、retry/fallback 和完成态 SQLite 快照。
 - **MCP 接入**：通过显式配置和工具白名单接入外部 MCP Server；默认关闭。
 
-## 架构
-
-~~~mermaid
-flowchart LR
-    U[用户问题] --> API[FastAPI]
-    API --> C[Controller Agent<br/>意图路由]
-    C -->|direct_tool| D[单工具路径]
-    C -->|conversation| CT[会话上下文路径]
-    C -->|full_research| P[Planner Agent<br/>WorkPlan DAG]
-    P --> S[Send fan-out]
-    S --> W[Worker Agent × N<br/>搜索 / 阅读 / 分析 / 写作]
-    W --> M[确定性合并与去重]
-    M --> E[Evidence Card]
-    E --> Q[Citation Check + Evaluator]
-    Q --> R[Reviewer Agent]
-    R --> OUT[报告与状态]
-    API --> SSE[SSE Event Broker]
-    OUT --> STORE[RunStore + SQLite 快照]
-~~~
-
-### 一次完整研究
+### 运行流程
 
 1. Controller 根据请求和 Session 选择 direct_tool、conversation 或 full_research。
 2. Planner 生成带依赖关系的 WorkPlan。

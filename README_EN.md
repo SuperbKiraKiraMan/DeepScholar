@@ -30,25 +30,6 @@ This is more than a “retrieve chunks and call an LLM” demo. The source, evid
 - **Operational visibility**: background runs, progressive SSE events, cancellation, warnings, retry/fallback, and completed-run SQLite snapshots.
 - **MCP integration**: external MCP servers can be enabled through explicit configuration and tool allowlists; disabled by default.
 
-## Architecture
-
-~~~mermaid
-flowchart LR
-    U[Research question] --> API[FastAPI]
-    API --> C[Controller Agent<br/>intent routing]
-    C -->|direct_tool| D[Direct capability]
-    C -->|conversation| CT[Session context]
-    C -->|full_research| P[Planner Agent<br/>WorkPlan DAG]
-    P --> S[Send fan-out]
-    S --> W[Worker Agent × N<br/>search / read / analyze / write]
-    W --> M[Deterministic merge<br/>and deduplication]
-    M --> E[Evidence Cards]
-    E --> Q[Citation Check + Evaluator]
-    Q --> R[Reviewer Agent]
-    R --> OUT[Report and status]
-    API --> SSE[SSE Event Broker]
-    OUT --> STORE[RunStore + SQLite snapshot]
-~~~
 
 ### Full research lifecycle
 
