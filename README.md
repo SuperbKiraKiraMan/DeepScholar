@@ -1,7 +1,7 @@
 <div align="center">
   <img src="app/web/assets/academic-copilot-logo.png" alt="Academic Research Copilot" width="220">
-  <h1>Academic Research Copilot</h1>
-  <p>面向学术检索、证据抽取与可追溯报告生成的 Agent-first 研究助手</p>
+  <h1>DeepScholar</h1>
+  <p>面向文献检索与深度调研的学术 Agent</p>
   <p><a href="README_EN.md">English</a> · 中文</p>
   <p>
     <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white" alt="Python"></a>
@@ -10,14 +10,17 @@
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-2F80ED" alt="Apache 2.0"></a>
   </p>
 </div>
+<p align="center">
+  <img src="docs/assets/demo.png" alt="DeepScholar Demo" width="900">
+</p>
+
 
 ## 项目简介
 
-Academic Research Copilot 把一个研究问题转换为可观察、可验收的工作流：识别意图，规划任务，检索学术来源，抽取带来源绑定的 Evidence Card，执行引用一致性检查，并生成带引用的研究报告。项目同时支持多轮会话、实时 SSE 进度、运行历史和可选的本地论文检索。
+DeepScholar 是一个面向研究生与科研场景的学术 Agent，支持论文检索与推荐、论文对比与追问、引用查询，以及针对特定研究主题的深度调研报告生成。
 
-它不是把搜索结果直接塞进 Prompt 的简单 RAG Demo。检索、证据、引用和最终报告之间有明确的数据契约；LLM 负责语义判断与生成，规则代码负责来源标识、工具白名单、预算、超时、引用校验和最终状态。
 
-> 项目适合本地研究工作流、教学和二次开发。它默认是单进程、单实例应用，不承诺学术事实绝对正确，也不包含认证、多租户或生产级 SLA。
+> 项目适合本地研究工作流、教学和二次开发。不承诺学术事实绝对正确，也不包含认证、多租户或生产级 SLA。
 
 ## 核心能力
 
@@ -221,7 +224,6 @@ tests/               单元、契约和集成测试
 - 引用检查验证内部一致性，不等于对学术结论做独立事实核验。
 - MCP 默认关闭；启用后仍需要显式 server/tool allowlist。
 - 本地论文、全文、记忆、数据库和模型缓存都属于用户数据，应放在仓库之外或由 .gitignore 排除。
-- 发现疑似密钥泄露时，请立即撤销并轮换密钥，再参考 [SECURITY.md](SECURITY.md) 报告。
 
 ## Roadmap
 
