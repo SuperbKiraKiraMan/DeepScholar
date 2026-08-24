@@ -1,6 +1,6 @@
 <div align="center">
   <img src="app/web/assets/academic-copilot-logo.png" alt="Academic Research Copilot" width="220">
-  <h1>DeepScholar</h1>
+  <h1>DeepScholar|学术调研助手</h1>
   <p>面向文献检索与深度调研的学术 Agent</p>
   <p><a href="README_EN.md">English</a> · 中文</p>
   <p>
